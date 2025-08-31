@@ -161,30 +161,22 @@ func (p *playwrightPage) InputValue(selector string) (string, error) {
 }
 
 // GetElementCount returns the count of elements matching the selector
+// This method is primarily used for assertions
 func (p *playwrightPage) GetElementCount(selector string) (int, error) {
-	locator := p.page.Locator(selector)
-	count, err := locator.Count()
-	if err != nil {
-		return 0, fmt.Errorf("failed to get element count for %s: %w", selector, err)
-	}
-	return count, nil
+	helper := newElementHelper(p)
+	return helper.GetElementCount(selector)
 }
 
 // GetElementText returns the text content of an element
+// This method is primarily used for assertions
 func (p *playwrightPage) GetElementText(selector string) (string, error) {
-	locator := p.page.Locator(selector)
-	text, err := locator.TextContent()
-	if err != nil {
-		return "", fmt.Errorf("failed to get text content for %s: %w", selector, err)
-	}
-	return text, nil
+	helper := newElementHelper(p)
+	return helper.GetElementText(selector)
 }
 
 // ElementExists checks if an element exists
+// This method is primarily used for assertions
 func (p *playwrightPage) ElementExists(selector string) (bool, error) {
-	count, err := p.GetElementCount(selector)
-	if err != nil {
-		return false, err
-	}
-	return count > 0, nil
+	helper := newElementHelper(p)
+	return helper.ElementExists(selector)
 }
