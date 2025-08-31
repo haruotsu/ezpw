@@ -45,7 +45,7 @@ func (e *Engine) Execute(scenario *types.Scenario) error {
 
 	for i, step := range scenario.Steps {
 		fmt.Printf("Step %d: %s\n", i+1, step.Type)
-		
+
 		err := e.executeStep(step)
 		if err != nil {
 			return fmt.Errorf("step %d failed: %w", i+1, err)

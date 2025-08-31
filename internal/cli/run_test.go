@@ -12,12 +12,12 @@ import (
 
 func TestRunCommand_FlagParsing(t *testing.T) {
 	tests := []struct {
-		name           string
-		args           []string
-		expectedBrowser string
-		expectedHeadless bool
-		expectedTimeout int
-		expectedVerbose bool
+		name                string
+		args                []string
+		expectedBrowser     string
+		expectedHeadless    bool
+		expectedTimeout     int
+		expectedVerbose     bool
 		expectedAutoInstall bool
 	}{
 		{
@@ -143,12 +143,12 @@ func TestRunCommand_FlagParsing(t *testing.T) {
 
 func TestProcessPath_NonexistentFile(t *testing.T) {
 	config := testConfig()
-	
+
 	err := processPath("/nonexistent/file.yml", config, false, false, false)
 	if err == nil {
 		t.Error("Expected error for nonexistent file, got nil")
 	}
-	
+
 	if !strings.Contains(err.Error(), "path does not exist") {
 		t.Errorf("Expected 'path does not exist' error, got: %v", err)
 	}
@@ -170,12 +170,12 @@ func TestProcessPath_InvalidYAMLFile(t *testing.T) {
 	tmpFile.Close()
 
 	config := testConfig()
-	
+
 	err = processPath(tmpFile.Name(), config, false, false, false)
 	if err == nil {
 		t.Error("Expected error for invalid YAML file, got nil")
 	}
-	
+
 	if !strings.Contains(err.Error(), "failed to parse YAML") {
 		t.Errorf("Expected 'failed to parse YAML' error, got: %v", err)
 	}
@@ -214,7 +214,7 @@ steps:
 	}
 
 	config := testConfig()
-	
+
 	// Process the directory - this should succeed since browsers are installed
 	err = processPath(tmpDir, config, false, false, false)
 	if err != nil {
@@ -240,4 +240,3 @@ func testConfig() types.Config {
 		Timeout:  30000,
 	}
 }
-

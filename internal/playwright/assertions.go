@@ -24,43 +24,43 @@ func (a *Assertion) AssertTextContent(selector, expectedText string) error {
 	if err != nil {
 		return fmt.Errorf("failed to check element existence for selector %s: %w", selector, err)
 	}
-	
+
 	if !exists {
 		return fmt.Errorf("element with selector %s not found", selector)
 	}
-	
+
 	// Get text content
 	actualText, err := a.page.GetElementText(selector)
 	if err != nil {
 		return fmt.Errorf("failed to get text content for selector %s: %w", selector, err)
 	}
-	
+
 	if actualText != expectedText {
 		return fmt.Errorf("text content mismatch for selector %s: expected '%s', got '%s'", selector, expectedText, actualText)
 	}
-	
+
 	return nil
 }
 
 // AssertURLContains asserts that the current URL contains the expected substring
 func (a *Assertion) AssertURLContains(expectedSubstring string) error {
 	currentURL := a.page.URL()
-	
+
 	if !strings.Contains(currentURL, expectedSubstring) {
 		return fmt.Errorf("URL does not contain expected substring: expected URL to contain '%s', got '%s'", expectedSubstring, currentURL)
 	}
-	
+
 	return nil
 }
 
 // AssertURL asserts that the current URL matches the expected URL exactly
 func (a *Assertion) AssertURL(expectedURL string) error {
 	currentURL := a.page.URL()
-	
+
 	if currentURL != expectedURL {
 		return fmt.Errorf("URL mismatch: expected '%s', got '%s'", expectedURL, currentURL)
 	}
-	
+
 	return nil
 }
 
@@ -70,10 +70,10 @@ func (a *Assertion) AssertExists(selector string) error {
 	if err != nil {
 		return fmt.Errorf("failed to check element existence for selector %s: %w", selector, err)
 	}
-	
+
 	if !exists {
 		return fmt.Errorf("element with selector %s does not exist", selector)
 	}
-	
+
 	return nil
 }

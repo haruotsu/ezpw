@@ -37,7 +37,7 @@ func TestGetElementCount(t *testing.T) {
 			<div id="unique">Unique element</div>
 		</body></html>
 	`
-	
+
 	playwrightPage, ok := page.(*playwrightPage)
 	if !ok {
 		t.Fatal("Failed to cast to playwrightPage")
@@ -105,7 +105,7 @@ func TestGetElementText(t *testing.T) {
 			<div id="empty"></div>
 		</body></html>
 	`
-	
+
 	playwrightPage, ok := page.(*playwrightPage)
 	if !ok {
 		t.Fatal("Failed to cast to playwrightPage")
@@ -172,7 +172,7 @@ func TestElementExists(t *testing.T) {
 			<input class="form-field" type="text">
 		</body></html>
 	`
-	
+
 	playwrightPage, ok := page.(*playwrightPage)
 	if !ok {
 		t.Fatal("Failed to cast to playwrightPage")
@@ -240,7 +240,7 @@ func TestGetElementValue(t *testing.T) {
 			<input id="empty-input" type="text">
 		</body></html>
 	`
-	
+
 	playwrightPage, ok := page.(*playwrightPage)
 	if !ok {
 		t.Fatal("Failed to cast to playwrightPage")

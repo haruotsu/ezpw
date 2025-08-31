@@ -37,7 +37,7 @@ func TestAssertTextContent(t *testing.T) {
 
 	// Test text content assertion
 	assertion := NewAssertion(page)
-	
+
 	err = assertion.AssertTextContent("#title", "Welcome")
 	if err != nil {
 		t.Errorf("Expected no error for matching text content, got %v", err)
