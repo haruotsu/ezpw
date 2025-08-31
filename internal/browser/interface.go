@@ -17,8 +17,8 @@ type Page interface {
 	// Interactions
 	ClickElement(selector string) error
 	Click(selector string) error // Alias for backward compatibility
-	FillElement(selector string, value string) error
-	Fill(selector string, value string) error // Alias for backward compatibility
+	FillElement(selector, value string) error
+	Fill(selector, value string) error // Alias for backward compatibility
 
 	// Getters
 	URL() string

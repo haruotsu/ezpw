@@ -113,8 +113,8 @@ func TestEngineStepTypes(t *testing.T) {
 
 	// Test individual step types
 	testCases := []struct {
-		name     string
 		scenario *types.Scenario
+		name     string
 		wantErr  bool
 	}{
 		{

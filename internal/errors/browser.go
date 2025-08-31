@@ -7,8 +7,8 @@ import (
 
 // BrowserNotFoundError represents an error when browser is not installed
 type BrowserNotFoundError struct {
-	Browser string
 	Cause   error
+	Browser string
 }
 
 func (e *BrowserNotFoundError) Error() string {

@@ -36,9 +36,7 @@ var runCmd = &cobra.Command{
   - A directory: ezpw run ./tests/
   - Multiple files: ezpw run test1.yml test2.yml`,
 	Args: cobra.MinimumNArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return cli.RunCommand(cmd, args)
-	},
+	RunE: cli.RunCommand,
 }
 
 const defaultTimeout = 30000
@@ -55,7 +53,8 @@ func init() {
 	runCmd.Flags().StringP("output", "o", "./reports", "Output directory for reports")
 	runCmd.Flags().BoolP("verbose", "v", false, "Verbose output")
 	runCmd.Flags().Bool("debug", false, "Debug mode")
-	runCmd.Flags().Bool("auto-install", true, "Automatically install browsers if missing (disable in CI with --no-auto-install)")
+	runCmd.Flags().Bool("auto-install", true,
+		"Automatically install browsers if missing (disable in CI with --no-auto-install)")
 	runCmd.Flags().Bool("no-auto-install", false, "Disable automatic browser installation")
 }
 

@@ -44,7 +44,7 @@ func NewBrowser(config types.Config) (browser.Browser, error) {
 	}
 
 	if err != nil {
-		pw.Stop()
+		_ = pw.Stop()
 		// Check if it's a browser installation error
 		if errors.IsBrowserNotFoundError(err) {
 			return nil, &errors.BrowserNotFoundError{
@@ -117,7 +117,7 @@ func (p *playwrightPage) Click(selector string) error {
 }
 
 // FillElement fills an input element with the given value using locator-based API
-func (p *playwrightPage) FillElement(selector string, value string) error {
+func (p *playwrightPage) FillElement(selector, value string) error {
 	locator := p.page.Locator(selector)
 	err := locator.Fill(value)
 	if err != nil {
@@ -127,7 +127,7 @@ func (p *playwrightPage) FillElement(selector string, value string) error {
 }
 
 // Fill is an alias for FillElement to maintain backward compatibility
-func (p *playwrightPage) Fill(selector string, value string) error {
+func (p *playwrightPage) Fill(selector, value string) error {
 	return p.FillElement(selector, value)
 }
 

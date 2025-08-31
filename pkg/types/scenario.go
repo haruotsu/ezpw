@@ -8,6 +8,9 @@ type Scenario struct {
 
 // Step represents a single action in a test scenario
 type Step struct {
+	// Raw YAML data for complex parsing
+	Raw map[string]interface{} `yaml:",inline" json:"-"`
+
 	// For simple steps like "goto: url"
 	Type string `yaml:"type,omitempty" json:"type,omitempty"`
 	URL  string `yaml:"url,omitempty" json:"url,omitempty"`
@@ -19,9 +22,6 @@ type Step struct {
 	// For assertion steps
 	AssertType string `yaml:"type,omitempty" json:"assert_type,omitempty"`
 	Contains   string `yaml:"contains,omitempty" json:"contains,omitempty"`
-
-	// Raw YAML data for complex parsing
-	Raw map[string]interface{} `yaml:",inline" json:"-"`
 }
 
 // Config represents configuration for the test execution

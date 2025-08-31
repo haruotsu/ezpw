@@ -59,20 +59,19 @@ func RunCommand(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func processPath(path string, config types.Config, verbose, debug, autoInstall bool) error {
+func processPath(path string, config types.Config, verbose, _, autoInstall bool) error {
 	info, err := os.Stat(path)
 	if err != nil {
 		return fmt.Errorf("path does not exist: %s", path)
 	}
 
 	if info.IsDir() {
-		return processDirectory(path, config, verbose, debug, autoInstall)
-	} else {
-		return processFile(path, config, verbose, debug, autoInstall)
+		return processDirectory(path, config, verbose, false, autoInstall)
 	}
+	return processFile(path, config, verbose, false, autoInstall)
 }
 
-func processDirectory(dirPath string, config types.Config, verbose, debug, autoInstall bool) error {
+func processDirectory(dirPath string, config types.Config, verbose, _, autoInstall bool) error {
 	if verbose {
 		fmt.Printf("Processing directory: %s\n", dirPath)
 	}
@@ -83,14 +82,14 @@ func processDirectory(dirPath string, config types.Config, verbose, debug, autoI
 		}
 
 		if !info.IsDir() && (filepath.Ext(path) == ".yml" || filepath.Ext(path) == ".yaml") {
-			return processFile(path, config, verbose, debug, autoInstall)
+			return processFile(path, config, verbose, false, autoInstall)
 		}
 
 		return nil
 	})
 }
 
-func processFile(filePath string, config types.Config, verbose, debug, autoInstall bool) error {
+func processFile(filePath string, config types.Config, verbose, _, autoInstall bool) error {
 	if verbose {
 		fmt.Printf("Processing file: %s\n", filePath)
 	}

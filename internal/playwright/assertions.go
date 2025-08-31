@@ -36,7 +36,8 @@ func (a *Assertion) AssertTextContent(selector, expectedText string) error {
 	}
 
 	if actualText != expectedText {
-		return fmt.Errorf("text content mismatch for selector %s: expected '%s', got '%s'", selector, expectedText, actualText)
+		return fmt.Errorf("text content mismatch for selector %s: expected '%s', got '%s'",
+			selector, expectedText, actualText)
 	}
 
 	return nil
@@ -47,7 +48,8 @@ func (a *Assertion) AssertURLContains(expectedSubstring string) error {
 	currentURL := a.page.URL()
 
 	if !strings.Contains(currentURL, expectedSubstring) {
-		return fmt.Errorf("URL does not contain expected substring: expected URL to contain '%s', got '%s'", expectedSubstring, currentURL)
+		return fmt.Errorf("URL does not contain expected substring: expected URL to contain '%s', got '%s'",
+			expectedSubstring, currentURL)
 	}
 
 	return nil

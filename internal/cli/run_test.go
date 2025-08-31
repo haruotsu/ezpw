@@ -12,13 +12,13 @@ import (
 
 func TestRunCommand_FlagParsing(t *testing.T) {
 	tests := []struct {
-		name                string
 		args                []string
+		name                string
 		expectedBrowser     string
-		expectedHeadless    bool
 		expectedTimeout     int
-		expectedVerbose     bool
 		expectedAutoInstall bool
+		expectedHeadless    bool
+		expectedVerbose     bool
 	}{
 		{
 			name:                "default values",
@@ -81,7 +81,7 @@ func TestRunCommand_FlagParsing(t *testing.T) {
 			// Create a test command with our run command logic
 			cmd := &cobra.Command{
 				Use: "run",
-				RunE: func(cmd *cobra.Command, args []string) error {
+				RunE: func(cmd *cobra.Command, _ []string) error {
 					// Get flags (same logic as RunCommand)
 					browser, _ := cmd.Flags().GetString("browser")
 					headless, _ := cmd.Flags().GetBool("headless")
@@ -195,20 +195,20 @@ steps:
   - goto: "https://example.com"`
 
 	yamlFile1 := filepath.Join(tmpDir, "test1.yml")
-	err = os.WriteFile(yamlFile1, []byte(validYAML), 0644)
+	err = os.WriteFile(yamlFile1, []byte(validYAML), 0o600)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
 	yamlFile2 := filepath.Join(tmpDir, "test2.yaml")
-	err = os.WriteFile(yamlFile2, []byte(validYAML), 0644)
+	err = os.WriteFile(yamlFile2, []byte(validYAML), 0o600)
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
 	// Create a non-YAML file (should be ignored)
 	txtFile := filepath.Join(tmpDir, "readme.txt")
-	err = os.WriteFile(txtFile, []byte("This is not YAML"), 0644)
+	err = os.WriteFile(txtFile, []byte("This is not YAML"), 0o600)
 	if err != nil {
 		t.Fatalf("Failed to create text file: %v", err)
 	}

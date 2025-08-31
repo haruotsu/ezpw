@@ -10,10 +10,10 @@ import (
 
 // Engine executes test scenarios
 type Engine struct {
-	config    types.Config
 	browser   browser.Browser
 	page      browser.Page
 	assertion *playwright.Assertion
+	config    types.Config
 }
 
 // NewEngine creates a new execution engine
@@ -46,7 +46,7 @@ func (e *Engine) Execute(scenario *types.Scenario) error {
 	for i, step := range scenario.Steps {
 		fmt.Printf("Step %d: %s\n", i+1, step.Type)
 
-		err := e.executeStep(step)
+		err := e.executeStep(&step)
 		if err != nil {
 			return fmt.Errorf("step %d failed: %w", i+1, err)
 		}
@@ -57,7 +57,7 @@ func (e *Engine) Execute(scenario *types.Scenario) error {
 }
 
 // executeStep executes a single step
-func (e *Engine) executeStep(step types.Step) error {
+func (e *Engine) executeStep(step *types.Step) error {
 	switch step.Type {
 	case "goto":
 		if step.URL == "" {
@@ -89,7 +89,7 @@ func (e *Engine) executeStep(step types.Step) error {
 }
 
 // executeAssert handles assertion steps
-func (e *Engine) executeAssert(step types.Step) error {
+func (e *Engine) executeAssert(step *types.Step) error {
 	switch step.AssertType {
 	case "text_content":
 		if step.Selector == "" {
