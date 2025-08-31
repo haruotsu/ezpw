@@ -42,11 +42,67 @@ ezpw run test.yml --no-headless
 ezpw run test.yml --verbose
 ```
 
+## CI/CD
+
+### 自動化されているプロセス
+
+このプロジェクトでは、GitHub Actionsを使用して以下のプロセスを自動化しています：
+
+#### CI
+
+プルリクエスト・プッシュ時に自動実行
+
+1. Lint - コード品質チェック
+   - `gofmt`によるフォーマットチェック
+   - `golangci-lint`による静的解析（30種類以上のlinter）
+
+2. Test - 自動テスト
+   - Go 1.23と1.24でのマトリックステスト
+   - レースコンディション検出付きテスト実行
+   - カバレッジレポートの生成とアップロード
+
+3. Build - ビルド検証
+   - バイナリのビルド成功確認
+   - CLIコマンドの動作確認
+
+#### CD
+
+mainブランチへのプッシュ時に自動実行
+
+1. 自動バージョニング
+   - セマンティックバージョニングによる自動タグ付け
+   - コミットメッセージからバージョンを決定
+     - `fix:` → パッチバージョンアップ (0.0.X)
+     - `feat:` → マイナーバージョンアップ (0.X.0)
+     - `BREAKING CHANGE:` → メジャーバージョンアップ (X.0.0)
+
+2. リリース作成
+   - GitHub Releaseの自動作成
+   - 変更ログの自動生成
+   - マルチプラットフォームバイナリの配布
+     - Linux (amd64)
+     - macOS (Intel/Apple Silicon)
+     - Windows (amd64)
+
+3. Dockerイメージ
+   - GitHub Container Registry (ghcr.io)への自動プッシュ
+   - 最新タグとバージョンタグの両方を付与
+
+### Dockerサポート
+
+```bash
+# 最新版のイメージを取得
+docker pull ghcr.io/haruotsu/ezpw:latest
+
+# コンテナでテスト実行
+docker run -v $(pwd):/workspace ghcr.io/haruotsu/ezpw:latest run test.yml
+```
+
 ## 開発
 
 ### 前提条件
 
-- Go 1.21以上
+- Go 1.24以上
 - Node.js (Playwright インストール用)
 
 ### セットアップ
