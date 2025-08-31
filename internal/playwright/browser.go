@@ -3,25 +3,26 @@ package playwright
 import (
 	"fmt"
 
+	"github.com/haruotsu/ezpw/internal/browser"
 	"github.com/haruotsu/ezpw/internal/errors"
 	"github.com/haruotsu/ezpw/pkg/types"
 	"github.com/playwright-community/playwright-go"
 )
 
-// Browser wraps playwright browser functionality
-type Browser struct {
+// playwrightBrowser implements browser.Browser interface using Playwright
+type playwrightBrowser struct {
 	pw      *playwright.Playwright
 	browser playwright.Browser
 	config  types.Config
 }
 
-// Page wraps playwright page functionality
-type Page struct {
+// playwrightPage implements browser.Page interface using Playwright
+type playwrightPage struct {
 	page playwright.Page
 }
 
-// NewBrowser creates a new browser instance
-func NewBrowser(config types.Config) (*Browser, error) {
+// NewBrowser creates a new browser instance that implements browser.Browser interface
+func NewBrowser(config types.Config) (browser.Browser, error) {
 	pw, err := playwright.Run()
 	if err != nil {
 		return nil, fmt.Errorf("failed to run playwright: %w", err)
@@ -54,7 +55,7 @@ func NewBrowser(config types.Config) (*Browser, error) {
 		return nil, fmt.Errorf("failed to launch browser: %w", err)
 	}
 
-	return &Browser{
+	return &playwrightBrowser{
 		pw:      pw,
 		browser: browser,
 		config:  config,
@@ -62,17 +63,17 @@ func NewBrowser(config types.Config) (*Browser, error) {
 }
 
 // NewPage creates a new page
-func (b *Browser) NewPage() (*Page, error) {
+func (b *playwrightBrowser) NewPage() (browser.Page, error) {
 	page, err := b.browser.NewPage()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new page: %w", err)
 	}
 
-	return &Page{page: page}, nil
+	return &playwrightPage{page: page}, nil
 }
 
 // Close closes the browser and cleans up resources
-func (b *Browser) Close() error {
+func (b *playwrightBrowser) Close() error {
 	if b.browser != nil {
 		if err := b.browser.Close(); err != nil {
 			return fmt.Errorf("failed to close browser: %w", err)
@@ -87,7 +88,7 @@ func (b *Browser) Close() error {
 }
 
 // NavigateToURL navigates to the specified URL
-func (p *Page) NavigateToURL(url string) error {
+func (p *playwrightPage) NavigateToURL(url string) error {
 	_, err := p.page.Goto(url)
 	if err != nil {
 		return fmt.Errorf("failed to navigate to %s: %w", url, err)
@@ -96,12 +97,12 @@ func (p *Page) NavigateToURL(url string) error {
 }
 
 // Goto is an alias for NavigateToURL to maintain backward compatibility
-func (p *Page) Goto(url string) error {
+func (p *playwrightPage) Goto(url string) error {
 	return p.NavigateToURL(url)
 }
 
 // ClickElement clicks on an element identified by selector using locator-based API
-func (p *Page) ClickElement(selector string) error {
+func (p *playwrightPage) ClickElement(selector string) error {
 	locator := p.page.Locator(selector)
 	err := locator.Click()
 	if err != nil {
@@ -111,12 +112,12 @@ func (p *Page) ClickElement(selector string) error {
 }
 
 // Click is an alias for ClickElement to maintain backward compatibility
-func (p *Page) Click(selector string) error {
+func (p *playwrightPage) Click(selector string) error {
 	return p.ClickElement(selector)
 }
 
 // FillElement fills an input element with the given value using locator-based API
-func (p *Page) FillElement(selector string, value string) error {
+func (p *playwrightPage) FillElement(selector string, value string) error {
 	locator := p.page.Locator(selector)
 	err := locator.Fill(value)
 	if err != nil {
@@ -126,17 +127,17 @@ func (p *Page) FillElement(selector string, value string) error {
 }
 
 // Fill is an alias for FillElement to maintain backward compatibility
-func (p *Page) Fill(selector string, value string) error {
+func (p *playwrightPage) Fill(selector string, value string) error {
 	return p.FillElement(selector, value)
 }
 
 // URL returns the current URL of the page
-func (p *Page) URL() string {
+func (p *playwrightPage) URL() string {
 	return p.page.URL()
 }
 
 // SetContent sets the HTML content of the page
-func (p *Page) SetContent(html string) error {
+func (p *playwrightPage) SetContent(html string) error {
 	err := p.page.SetContent(html)
 	if err != nil {
 		return fmt.Errorf("failed to set content: %w", err)
@@ -145,7 +146,7 @@ func (p *Page) SetContent(html string) error {
 }
 
 // GetElementValue gets the value of an input element using locator-based API
-func (p *Page) GetElementValue(selector string) (string, error) {
+func (p *playwrightPage) GetElementValue(selector string) (string, error) {
 	locator := p.page.Locator(selector)
 	value, err := locator.InputValue()
 	if err != nil {
@@ -155,6 +156,35 @@ func (p *Page) GetElementValue(selector string) (string, error) {
 }
 
 // InputValue is an alias for GetElementValue to maintain backward compatibility
-func (p *Page) InputValue(selector string) (string, error) {
+func (p *playwrightPage) InputValue(selector string) (string, error) {
 	return p.GetElementValue(selector)
+}
+
+// GetElementCount returns the count of elements matching the selector
+func (p *playwrightPage) GetElementCount(selector string) (int, error) {
+	locator := p.page.Locator(selector)
+	count, err := locator.Count()
+	if err != nil {
+		return 0, fmt.Errorf("failed to get element count for %s: %w", selector, err)
+	}
+	return count, nil
+}
+
+// GetElementText returns the text content of an element
+func (p *playwrightPage) GetElementText(selector string) (string, error) {
+	locator := p.page.Locator(selector)
+	text, err := locator.TextContent()
+	if err != nil {
+		return "", fmt.Errorf("failed to get text content for %s: %w", selector, err)
+	}
+	return text, nil
+}
+
+// ElementExists checks if an element exists
+func (p *playwrightPage) ElementExists(selector string) (bool, error) {
+	count, err := p.GetElementCount(selector)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
