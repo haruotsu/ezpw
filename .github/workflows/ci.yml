@@ -58,8 +58,7 @@ jobs:
 
       - name: Install Playwright dependencies
         run: |
-          npm install -g playwright
-          playwright install --with-deps chromium
+          go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps chromium
 
       - name: Run tests
         run: |
