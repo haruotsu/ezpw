@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/haruotsu/ezpw/internal/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -35,10 +36,8 @@ var runCmd = &cobra.Command{
   - A directory: ezpw run ./tests/
   - Multiple files: ezpw run test1.yml test2.yml`,
 	Args: cobra.MinimumNArgs(1),
-	Run: func(_ *cobra.Command, args []string) {
-		fmt.Printf("Running scenarios: %v\n", args)
-		// TODO: 実装する
-		fmt.Println("This feature will be implemented in Phase 1")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cli.RunCommand(cmd, args)
 	},
 }
 
@@ -56,6 +55,8 @@ func init() {
 	runCmd.Flags().StringP("output", "o", "./reports", "Output directory for reports")
 	runCmd.Flags().BoolP("verbose", "v", false, "Verbose output")
 	runCmd.Flags().Bool("debug", false, "Debug mode")
+	runCmd.Flags().Bool("auto-install", true, "Automatically install browsers if missing (disable in CI with --no-auto-install)")
+	runCmd.Flags().Bool("no-auto-install", false, "Disable automatic browser installation")
 }
 
 func main() {

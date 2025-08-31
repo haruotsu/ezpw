@@ -1,150 +1,257 @@
 # ezpw (Easy Playwright)
-**ezpw** (Easy Playwright) は、PlaywrightによるE2Eテストを、YAML形式で簡潔に記述できるツールです。
 
-## 特徴
+ezpw is a Go-based CLI tool that allows you to run Playwright E2E tests using simple YAML configuration files instead of JavaScript/TypeScript.
 
-- シンプルなYAML記述 - JavaScriptやTypeScriptの知識不要
-- マルチブラウザ対応 - Chromium、Firefox、WebKit
-- モバイル対応 - デバイスエミュレーション
+## Features (MVP - Phase 1)
 
-## クイックスタート
+- **Simple YAML syntax** for writing test scenarios  
+- **Basic browser actions**: goto, click, fill
+- **Basic assertions**: text content, URL, element existence
+- **Multiple browser support**: Chromium, Firefox, WebKit
+- **Headless and headed modes**
+- **Cross-platform support**
 
-### インストール
+## Installation
 
-```bash
-# Go 1.21以上が必要
-go install github.com/haruotsu/ezpw/cmd/ezpw@latest
-
-# または、リリースページからバイナリをダウンロード
-```
-
-### 基本的な使い方
-
-1. **テストシナリオの作成** (`test.yml`)
-
-```yaml
-
-```
-
-2. **テストの実行**
+### Step 1: Install ezpw
 
 ```bash
-# 基本実行
-ezpw run test.yml
-
-# 特定ブラウザで実行
-ezpw run test.yml --browser firefox
-
-# ヘッドレスモード無効化（ブラウザ表示）
-ezpw run test.yml --no-headless
-
-# 詳細ログ付きで実行
-ezpw run test.yml --verbose
-```
-
-## CI/CD
-
-### 自動化されているプロセス
-
-このプロジェクトでは、GitHub Actionsを使用して以下のプロセスを自動化しています：
-
-#### CI
-
-プルリクエスト・プッシュ時に自動実行
-
-1. Lint - コード品質チェック
-   - `gofmt`によるフォーマットチェック
-   - `golangci-lint`による静的解析（30種類以上のlinter）
-
-2. Test - 自動テスト
-   - Go 1.23と1.24でのマトリックステスト
-   - レースコンディション検出付きテスト実行
-   - カバレッジレポートの生成とアップロード
-
-3. Build - ビルド検証
-   - バイナリのビルド成功確認
-   - CLIコマンドの動作確認
-
-#### CD
-
-mainブランチへのプッシュ時に自動実行
-
-1. 自動バージョニング
-   - セマンティックバージョニングによる自動タグ付け
-   - コミットメッセージからバージョンを決定
-     - `fix:` → パッチバージョンアップ (0.0.X)
-     - `feat:` → マイナーバージョンアップ (0.X.0)
-     - `BREAKING CHANGE:` → メジャーバージョンアップ (X.0.0)
-
-2. リリース作成
-   - GitHub Releaseの自動作成
-   - 変更ログの自動生成
-   - マルチプラットフォームバイナリの配布
-     - Linux (amd64)
-     - macOS (Intel/Apple Silicon)
-     - Windows (amd64)
-
-3. Dockerイメージ
-   - GitHub Container Registry (ghcr.io)への自動プッシュ
-   - 最新タグとバージョンタグの両方を付与
-
-### Dockerサポート
-
-```bash
-# 最新版のイメージを取得
-docker pull ghcr.io/haruotsu/ezpw:latest
-
-# コンテナでテスト実行
-docker run -v $(pwd):/workspace ghcr.io/haruotsu/ezpw:latest run test.yml
-```
-
-## 開発
-
-### 前提条件
-
-- Go 1.24以上
-- Node.js (Playwright インストール用)
-
-### セットアップ
-
-```bash
-# リポジトリクローン
+# Build from source
 git clone https://github.com/haruotsu/ezpw.git
 cd ezpw
-
-# 依存関係インストール
-go mod download
-
-# Playwright インストール
-npm install -g playwright
-playwright install
-
-# ビルド
 make build
-
-# テスト実行
-make test
-
-# リント
-make lint
 ```
 
-### ディレクトリ構成
+### Step 2: Install Playwright browsers
+
+**⚠️ IMPORTANT**: Before running any tests, you must install Playwright browsers:
+
+```bash
+# Install browsers for ezpw (required)
+go run github.com/playwright-community/playwright-go/cmd/playwright@latest install
+
+# Or install with system dependencies (recommended for CI)
+go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps
+```
+
+### Step 3: Verify installation
+
+```bash
+# Test with a simple example
+./ezpw run testdata/basic.yml --verbose
+```
+
+**If you get a browser not found error**, make sure you ran the Playwright install command in Step 2.
+
+### 🚀 Auto-Install Feature
+
+ezpw can automatically install missing browsers for you! If browsers are not found, ezpw will:
+
+1. **Ask for permission** to install browsers
+2. **Automatically download** and install required browsers  
+3. **Continue execution** seamlessly
+
+```bash
+# Auto-install is enabled by default
+./ezpw run test.yml
+
+# Disable auto-install (useful for CI/CD)
+./ezpw run test.yml --no-auto-install
+```
+
+**Example auto-install flow:**
+```
+🚫 Browser 'chromium' is not installed.
+📦 ezpw requires Playwright browsers to run tests.
+
+Would you like to install the required browsers now? (y/N)
+▶ y
+
+📦 Installing Playwright browsers...
+✅ Browsers installed successfully!
+
+Executing scenario: Basic example test
+...
+```
+
+## Quick Start
+
+### 1. Create a test scenario file `basic.yml`:
+
+```yaml
+desc: Basic login test
+steps:
+  - goto: "https://example.com"
+  - click:
+      selector: "a[href='/login']"
+  - fill:
+      selector: "input[name='email']"
+      value: "test@example.com"
+  - fill:
+      selector: "input[name='password']"
+      value: "password"
+  - click:
+      selector: "button[type='submit']"
+  - assert:
+      type: url
+      contains: "/dashboard"
+```
+
+### 2. Run the test:
+
+```bash
+# Basic execution
+ezpw run basic.yml
+
+# Run with specific browser
+ezpw run basic.yml --browser firefox
+
+# Run in headed mode (show browser)
+ezpw run basic.yml --no-headless
+
+# Run with verbose output
+ezpw run basic.yml --verbose
+
+# Run all tests in a directory
+ezpw run ./tests/
+```
+
+## YAML Syntax
+
+### Basic Structure
+
+```yaml
+desc: Test description
+steps:
+  - step1
+  - step2
+  - ...
+```
+
+### Available Steps
+
+#### Navigation
+
+```yaml
+- goto: "https://example.com"
+```
+
+#### Interactions
+
+```yaml
+# Click element
+- click:
+    selector: "button#submit"
+
+# Fill input
+- fill:
+    selector: "input[name='username']"
+    value: "testuser"
+```
+
+#### Assertions
+
+```yaml
+# Assert URL contains text
+- assert:
+    type: url
+    contains: "/dashboard"
+
+# Assert element text content
+- assert:
+    type: text_content
+    selector: "h1"
+    contains: "Welcome"
+
+# Assert element exists
+- assert:
+    type: exists
+    selector: "#success-message"
+```
+
+### Command Line Options
+
+- `--browser`: Browser to use (chromium, firefox, webkit) - default: chromium
+- `--headless`: Run in headless mode (default: true)
+- `--no-headless`: Run in headed mode
+- `--timeout`: Global timeout in milliseconds (default: 30000)
+- `--verbose`: Verbose output
+- `--debug`: Debug mode
+- `--auto-install`: Automatically install browsers if missing (default: true)
+- `--no-auto-install`: Disable automatic browser installation (useful for CI/CD)
+
+## Development
+
+### Requirements
+
+- Go 1.21+
+- Node.js (for Playwright)
+- Playwright browsers
+
+### Commands
+
+```bash
+# Run tests
+make test
+
+# Run with coverage
+make test-coverage
+
+# Build
+make build
+
+# Format code
+make fmt
+
+# Run linter
+make lint
+
+# Development build (format, lint, test, build)
+make dev
+```
+
+### Project Structure
 
 ```
 ezpw/
-├── cmd/ezpw/           # CLI エントリーポイント
-├── internal/           # 内部パッケージ
-│   ├── cli/           # CLI 処理
-│   ├── parser/        # YAML パーサー
-│   ├── executor/      # 実行エンジン
-│   ├── playwright/    # Playwright 統合
-│   └── reporter/      # レポート生成
-├── pkg/types/         # 公開型定義
-├── testdata/          # テストデータ
-└── docs/              # ドキュメント
+├── cmd/ezpw/           # CLI entry point
+├── internal/
+│   ├── cli/           # CLI processing
+│   ├── executor/      # Test execution engine  
+│   ├── parser/        # YAML parser
+│   └── playwright/    # Playwright integration
+├── pkg/types/         # Public type definitions
+└── testdata/          # Test scenarios
 ```
 
-## ライセンス
+## Contributing
 
-[MIT License](LICENSE) の下でライセンスされています。
+1. Fork the repository
+2. Create your feature branch
+3. Add tests for new functionality
+4. Run `make dev` to ensure quality
+5. Submit a pull request
+
+## Status
+
+🚧 **This is the MVP (Phase 1) implementation** 🚧
+
+Current features:
+- ✅ Basic YAML parsing and execution
+- ✅ Core browser actions (goto, click, fill)
+- ✅ Basic assertions (URL, text content, element existence)
+- ✅ Multi-browser support
+
+Coming in future phases:
+- 🔄 Advanced selectors (text, role, label-based)
+- 🔄 Variables and templating
+- 🔄 Wait conditions
+- 🔄 Screenshot functionality
+- 🔄 Advanced assertions
+- 🔄 Configuration files
+- 🔄 Conditional logic and loops
+- 🔄 Reporting and CI/CD integration
+
+## License
+
+MIT License - see LICENSE file for details.
