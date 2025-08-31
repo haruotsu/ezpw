@@ -1,0 +1,6 @@
+desc: Basic example test
+steps:
+  - goto: "https://example.com"
+  - assert:
+      type: url
+      contains: "example.com"

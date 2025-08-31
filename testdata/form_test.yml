@@ -1,0 +1,10 @@
+desc: Form interaction test
+steps:
+  - goto: "data:text/html,<html><body><h1>Test Page</h1><input id='test' type='text' placeholder='Enter text'><div id='result'>Welcome</div></body></html>"
+  - fill:
+      selector: "#test"
+      value: "Hello World"
+  - assert:
+      type: text_content
+      selector: "#result"
+      contains: "Welcome"
