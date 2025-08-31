@@ -161,21 +161,18 @@ func (p *playwrightPage) InputValue(selector string) (string, error) {
 }
 
 // GetElementCount returns the count of elements matching the selector
-// This method is primarily used for assertions
 func (p *playwrightPage) GetElementCount(selector string) (int, error) {
 	helper := newElementHelper(p)
 	return helper.GetElementCount(selector)
 }
 
 // GetElementText returns the text content of an element
-// This method is primarily used for assertions
 func (p *playwrightPage) GetElementText(selector string) (string, error) {
 	helper := newElementHelper(p)
 	return helper.GetElementText(selector)
 }
 
 // ElementExists checks if an element exists
-// This method is primarily used for assertions
 func (p *playwrightPage) ElementExists(selector string) (bool, error) {
 	helper := newElementHelper(p)
 	return helper.ElementExists(selector)
