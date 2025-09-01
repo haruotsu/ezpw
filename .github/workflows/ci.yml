@@ -71,15 +71,15 @@ jobs:
         run: |
           echo "Installing Playwright dependencies..."
           go mod download
-          echo "Running playwright install..."
-          # Install playwright and set it globally available
-          go install github.com/playwright-community/playwright-go/cmd/playwright@latest
-          playwright install --with-deps chromium
+          echo "Installing Go Playwright driver..."
+          # First, install the go driver itself
+          go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps
           echo "Playwright installation completed"
           
           # Verify installation
           echo "Verifying Playwright installation..."
           ls -la ~/.cache/ms-playwright/ || true
+          ls -la ~/.cache/ms-playwright-go/ || true
           echo "Environment variables:"
           env | grep -i playwright || true
 
