@@ -24,7 +24,7 @@ type playwrightPage struct {
 // NewBrowser creates a new browser instance that implements browser.Browser interface
 func NewBrowser(config types.Config) (browser.Browser, error) {
 	runOptions := &playwright.RunOptions{}
-	
+
 	pw, err := playwright.Run(runOptions)
 	if err != nil {
 		return nil, fmt.Errorf("failed to run playwright: %w", err)
