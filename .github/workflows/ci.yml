@@ -71,17 +71,8 @@ jobs:
         run: |
           echo "Installing Playwright dependencies..."
           go mod download
-          echo "Installing Go Playwright driver..."
-          # First, install the go driver itself
           go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps
           echo "Playwright installation completed"
-          
-          # Verify installation
-          echo "Verifying Playwright installation..."
-          ls -la ~/.cache/ms-playwright/ || true
-          ls -la ~/.cache/ms-playwright-go/ || true
-          echo "Environment variables:"
-          env | grep -i playwright || true
 
       - name: Run tests
         env:
@@ -89,21 +80,7 @@ jobs:
           PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
           PLAYWRIGHT_DRIVER_PATH: /home/runner/.cache/ms-playwright-go
         run: |
-          echo "Pre-test Playwright check..."
-          echo "Checking browsers..."
-          ls -la /home/runner/.cache/ms-playwright/ || echo "Browser cache not found"
-          echo "Checking drivers..."
-          ls -la /home/runner/.cache/ms-playwright-go/ || echo "Driver cache not found"
-          echo "Checking driver version structure..."
-          ls -la /home/runner/.cache/ms-playwright-go/1.52.0/ || echo "Driver version not found"
-          echo "Environment variables:"
-          echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH"
-          echo "PLAYWRIGHT_DRIVER_PATH=$PLAYWRIGHT_DRIVER_PATH"
-          
-          echo "Pre-initializing Playwright..."
           go run github.com/playwright-community/playwright-go/cmd/playwright@latest install-deps
-          
-          echo "Running tests..."
           go test -v -race -coverprofile=coverage.out ./...
           go tool cover -html=coverage.out -o coverage.html
 
