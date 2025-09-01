@@ -29,9 +29,17 @@ func NewBrowser(config types.Config) (browser.Browser, error) {
 	// Set driver path explicitly for CI environments
 	if driverPath := os.Getenv("PLAYWRIGHT_DRIVER_PATH"); driverPath != "" {
 		runOptions.DriverDirectory = driverPath
+		if os.Getenv("CI") == "true" {
+			fmt.Printf("DEBUG: Using PLAYWRIGHT_DRIVER_PATH=%s\n", driverPath)
+		}
 	} else if browsersPath := os.Getenv("PLAYWRIGHT_BROWSERS_PATH"); browsersPath != "" {
 		// Fallback to browsers path for backwards compatibility
 		runOptions.DriverDirectory = browsersPath
+		if os.Getenv("CI") == "true" {
+			fmt.Printf("DEBUG: Using PLAYWRIGHT_BROWSERS_PATH=%s (fallback)\n", browsersPath)
+		}
+	} else if os.Getenv("CI") == "true" {
+		fmt.Printf("DEBUG: Using default driver directory\n")
 	}
 
 	pw, err := playwright.Run(runOptions)
