@@ -100,6 +100,9 @@ jobs:
           echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH"
           echo "PLAYWRIGHT_DRIVER_PATH=$PLAYWRIGHT_DRIVER_PATH"
           
+          echo "Pre-initializing Playwright..."
+          go run github.com/playwright-community/playwright-go/cmd/playwright@latest install-deps
+          
           echo "Running tests..."
           go test -v -race -coverprofile=coverage.out ./...
           go tool cover -html=coverage.out -o coverage.html
