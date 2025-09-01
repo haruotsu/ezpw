@@ -180,6 +180,32 @@ steps:
 - `--auto-install`: Automatically install browsers if missing (default: true)
 - `--no-auto-install`: Disable automatic browser installation (useful for CI/CD)
 
+### Environment Variables
+
+ezpw respects the following environment variables for advanced configuration:
+
+#### `PLAYWRIGHT_BROWSERS_PATH`
+Specifies custom path for Playwright browsers. **Optional** - ezpw works without this variable.
+
+```bash
+# Use default browser cache location (recommended for most users)
+./ezpw run test.yml
+
+# Use custom browser path (advanced users or CI environments)
+PLAYWRIGHT_BROWSERS_PATH=/custom/path ./ezpw run test.yml
+```
+
+**Default browser locations:**
+- **macOS**: `~/Library/Caches/ms-playwright-go/`
+- **Linux**: `~/.cache/ms-playwright-go/`  
+- **Windows**: `%USERPROFILE%\AppData\Local/ms-playwright-go/`
+
+**When to use:**
+- ✅ CI/CD environments with specific browser installation paths
+- ✅ Docker containers with custom mount points
+- ✅ Corporate environments with restricted cache directories
+- ❌ Normal development (auto-detection works fine)
+
 ## Development
 
 ### Requirements

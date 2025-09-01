@@ -2,6 +2,7 @@ package playwright
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/haruotsu/ezpw/internal/browser"
 	"github.com/haruotsu/ezpw/internal/errors"
@@ -24,6 +25,11 @@ type playwrightPage struct {
 // NewBrowser creates a new browser instance that implements browser.Browser interface
 func NewBrowser(config types.Config) (browser.Browser, error) {
 	runOptions := &playwright.RunOptions{}
+
+	// Set browsers path explicitly for CI environments
+	if browsersPath := os.Getenv("PLAYWRIGHT_BROWSERS_PATH"); browsersPath != "" {
+		runOptions.DriverDirectory = browsersPath
+	}
 
 	pw, err := playwright.Run(runOptions)
 	if err != nil {
