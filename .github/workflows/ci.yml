@@ -8,7 +8,7 @@ on:
     types: [ opened, synchronize, reopened ]
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -24,12 +24,23 @@ jobs:
           go-version: "1.24"
           cache: true
 
-      - name: Run go fmt
+      - name: Run go fmt and auto-commit
         run: |
-          if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
-            echo "gofmt check failed:"
-            gofmt -s -l .
-            exit 1
+          echo "Running gofmt..."
+          gofmt -s -w .
+          go mod tidy
+          
+          # Check if there are any changes
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Code formatting changes detected"
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -m "Auto-format code with gofmt 🤖 Automated code formatting by GitHub Actions"
+            git push
+            echo "Changes committed and pushed"
+          else
+            echo "No formatting changes needed"
           fi
 
       - name: Install golangci-lint
@@ -58,10 +69,18 @@ jobs:
 
       - name: Install Playwright dependencies
         run: |
-          go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps chromium
+          echo "Installing Playwright dependencies..."
+          go mod download
+          go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps
+          echo "Playwright installation completed"
 
       - name: Run tests
+        env:
+          CI: true
+          PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
+          PLAYWRIGHT_DRIVER_PATH: /home/runner/.cache/ms-playwright-go
         run: |
+          go run github.com/playwright-community/playwright-go/cmd/playwright@latest install-deps
           go test -v -race -coverprofile=coverage.out ./...
           go tool cover -html=coverage.out -o coverage.html
 
