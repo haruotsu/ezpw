@@ -58,10 +58,27 @@ jobs:
 
       - name: Install Playwright dependencies
         run: |
+          echo "Installing Playwright dependencies..."
+          go mod download
+          echo "Running playwright install..."
           go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps chromium
+          echo "Playwright installation completed"
+          
+          # Verify installation
+          echo "Verifying Playwright installation..."
+          ls -la ~/.cache/ms-playwright/ || true
+          echo "Environment variables:"
+          env | grep -i playwright || true
 
       - name: Run tests
+        env:
+          CI: true
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
         run: |
+          echo "Pre-test Playwright check..."
+          ls -la ~/.cache/ms-playwright/ || echo "Playwright cache not found"
+          
+          echo "Running tests..."
           go test -v -race -coverprofile=coverage.out ./...
           go tool cover -html=coverage.out -o coverage.html
 
