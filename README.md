@@ -182,29 +182,48 @@ steps:
 
 ### Environment Variables
 
-ezpw respects the following environment variables for advanced configuration:
+ezpw respects the following environment variables for advanced configuration. **All variables are optional** - ezpw works perfectly without any environment variables.
 
-#### `PLAYWRIGHT_BROWSERS_PATH`
-Specifies custom path for Playwright browsers. **Optional** - ezpw works without this variable.
+#### `PLAYWRIGHT_DRIVER_PATH`
+Specifies custom path for Playwright driver (Node.js runtime). **Priority: High**
 
 ```bash
-# Use default browser cache location (recommended for most users)
+# Use default driver cache location (recommended)
 ./ezpw run test.yml
 
-# Use custom browser path (advanced users or CI environments)
-PLAYWRIGHT_BROWSERS_PATH=/custom/path ./ezpw run test.yml
+# Use custom driver path (CI/Docker environments)
+PLAYWRIGHT_DRIVER_PATH=/custom/driver/path ./ezpw run test.yml
 ```
 
-**Default browser locations:**
-- **macOS**: `~/Library/Caches/ms-playwright-go/`
-- **Linux**: `~/.cache/ms-playwright-go/`  
-- **Windows**: `%USERPROFILE%\AppData\Local/ms-playwright-go/`
+#### `PLAYWRIGHT_BROWSERS_PATH`
+Specifies custom path for Playwright browsers. **Priority: Medium** (used when `PLAYWRIGHT_DRIVER_PATH` is not set)
 
-**When to use:**
-- ✅ CI/CD environments with specific browser installation paths
-- ✅ Docker containers with custom mount points
-- ✅ Corporate environments with restricted cache directories
-- ❌ Normal development (auto-detection works fine)
+```bash
+# Use custom browser path (legacy/compatibility)
+PLAYWRIGHT_BROWSERS_PATH=/custom/browsers/path ./ezpw run test.yml
+```
+
+**Default locations (auto-detected):**
+- **Driver cache**:
+  - macOS: `~/Library/Caches/ms-playwright-go/`
+  - Linux: `~/.cache/ms-playwright-go/`  
+  - Windows: `%USERPROFILE%\AppData\Local/ms-playwright-go/`
+- **Browser cache**:
+  - macOS: `~/Library/Caches/ms-playwright/`
+  - Linux: `~/.cache/ms-playwright/`
+  - Windows: `%USERPROFILE%\AppData\Local/ms-playwright/`
+
+**When to set environment variables:**
+- ✅ **CI/CD environments** with non-standard cache locations
+- ✅ **Docker containers** with custom mount points
+- ✅ **Corporate environments** with restricted cache directories
+- ✅ **Shared systems** with custom Playwright installations
+- ❌ **Normal development** (auto-detection works perfectly)
+
+**Priority order:**
+1. `PLAYWRIGHT_DRIVER_PATH` (if set)
+2. `PLAYWRIGHT_BROWSERS_PATH` (fallback)  
+3. Default system cache directories (automatic)
 
 ## Development
 

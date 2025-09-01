@@ -87,10 +87,16 @@ jobs:
         env:
           CI: true
           PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
+          PLAYWRIGHT_DRIVER_PATH: /home/runner/.cache/ms-playwright-go
         run: |
           echo "Pre-test Playwright check..."
-          ls -la /home/runner/.cache/ms-playwright/ || echo "Playwright cache not found"
+          echo "Checking browsers..."
+          ls -la /home/runner/.cache/ms-playwright/ || echo "Browser cache not found"
+          echo "Checking drivers..."
+          ls -la /home/runner/.cache/ms-playwright-go/ || echo "Driver cache not found"
+          echo "Environment variables:"
           echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH"
+          echo "PLAYWRIGHT_DRIVER_PATH=$PLAYWRIGHT_DRIVER_PATH"
           
           echo "Running tests..."
           go test -v -race -coverprofile=coverage.out ./...

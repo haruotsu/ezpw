@@ -26,8 +26,11 @@ type playwrightPage struct {
 func NewBrowser(config types.Config) (browser.Browser, error) {
 	runOptions := &playwright.RunOptions{}
 
-	// Set browsers path explicitly for CI environments
-	if browsersPath := os.Getenv("PLAYWRIGHT_BROWSERS_PATH"); browsersPath != "" {
+	// Set driver path explicitly for CI environments
+	if driverPath := os.Getenv("PLAYWRIGHT_DRIVER_PATH"); driverPath != "" {
+		runOptions.DriverDirectory = driverPath
+	} else if browsersPath := os.Getenv("PLAYWRIGHT_BROWSERS_PATH"); browsersPath != "" {
+		// Fallback to browsers path for backwards compatibility
 		runOptions.DriverDirectory = browsersPath
 	}
 
